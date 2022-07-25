@@ -56,8 +56,16 @@ class Graph:
 
     def get_attachments(self, message_id: str):
         endpoint = f'/me/messages/{message_id}/attachments'
+        select = 'id,name,contentType'
         top = 1
-        request_url = f'{endpoint}'
+        request_url = f'{endpoint}?$select={select}'
 
         attachment_response = self.user_client.get(request_url)
         return attachment_response.json()
+
+    def download_attachments(self, message_id: str, attachment_id: str):
+        endpoint = f'/me/messages/{message_id}/attachments/{attachment_id}'
+        request_url = f'{endpoint}/$value'
+
+        attachment_response = self.user_client.get(request_url)
+        return attachment_response

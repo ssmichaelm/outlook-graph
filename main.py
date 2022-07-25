@@ -35,14 +35,17 @@ def list_folders(graph: Graph):
     return folder_id
 
 def list_inbox(graph: Graph, folder_id: str):
-    message_page = graph.get_inbox(folder_id)
+    message_page = graph.get_inbox(folder_id).get('value')
 
-    # Output each message's details
-    for message in message_page['value']:
-        print('Message:', message['subject'])
-        print('  From:', message['from']['emailAddress']['name'])
-        print('  Status:', 'Read' if message['isRead'] else 'Unread')
-        print('  Received:', message['receivedDateTime'])
+    for message in message_page:
+        attachment = graph.get_attachments(message['id']).get('value')
+        file_name = attachment[0]['name']
+        file_type = attachment[0]['contentType']
+        attachment_content = graph.download_attachments(message['id'], attachment[0]['id'])
+
+        
+        with open(f'{file_name}', 'wb') as _f:
+            _f.write(attachment_content.content)
 
     # If @odata.nextLink is present
     more_available = '@odata.nextLink' in message_page
@@ -50,3 +53,11 @@ def list_inbox(graph: Graph, folder_id: str):
 
 # # Run main
 main()
+
+
+# # Output each message's details
+# for message in message_page['value']:
+#     print('Message:', message['subject'])
+#     print('  From:', message['from']['emailAddress']['name'])
+#     print('  Status:', 'Read' if message['isRead'] else 'Unread')
+#     print('  Received:', message['receivedDateTime'])

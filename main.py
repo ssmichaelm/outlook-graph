@@ -13,13 +13,6 @@ def main():
 
     folder_id = list_folders(graph)
     list_inbox(graph, folder_id)
-    
-def greet_user(graph: Graph):
-    user = graph.get_user()
-    print('Hello,', user['displayName'])
-    # For Work/school accounts, email is in mail property
-    # Personal accounts, email is in userPrincipalName
-    print('Email:', user['mail'] or user['userPrincipalName'], '\n')
 
 def display_access_token(graph: Graph):
     token = graph.get_user_token()
@@ -28,8 +21,12 @@ def display_access_token(graph: Graph):
 def list_folders(graph: Graph):
     folders = graph.get_folders().get('value')
 
+    print(folders)
+
+    folder_name = 'cybersecurity'
+
     for x in folders:
-        if x['displayName'] == 'cybersecurity':
+        if x['displayName'] == folder_name:
             folder_id = x['id']
 
     return folder_id
@@ -40,10 +37,8 @@ def list_inbox(graph: Graph, folder_id: str):
     for message in message_page:
         attachment = graph.get_attachments(message['id']).get('value')
         file_name = attachment[0]['name']
-        file_type = attachment[0]['contentType']
         attachment_content = graph.download_attachments(message['id'], attachment[0]['id'])
 
-        
         with open(f'{file_name}', 'wb') as _f:
             _f.write(attachment_content.content)
 
@@ -53,11 +48,3 @@ def list_inbox(graph: Graph, folder_id: str):
 
 # # Run main
 main()
-
-
-# # Output each message's details
-# for message in message_page['value']:
-#     print('Message:', message['subject'])
-#     print('  From:', message['from']['emailAddress']['name'])
-#     print('  Status:', 'Read' if message['isRead'] else 'Unread')
-#     print('  Received:', message['receivedDateTime'])

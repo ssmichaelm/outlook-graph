@@ -39,7 +39,8 @@ class Graph:
     def get_folders(self):
         endpoint = '/me/mailFolders'
         select = 'displayName,id'
-        request_url = f'{endpoint}?$select={select}'
+        search = 'hasAttachments:true'
+        request_url = f'{endpoint}?$search={search}&$select={select}'
 
         folder_response = self.user_client.get(request_url)
         return folder_response.json()

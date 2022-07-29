@@ -40,14 +40,14 @@ class Graph:
         endpoint = '/me/mailFolders'
         select = 'displayName,id'
         search = 'hasAttachments:true'
-        request_url = f'{endpoint}?$search={search}&$select={select}'
+        request_url = f'{endpoint}?$select={select}'
 
         folder_response = self.user_client.get(request_url)
         return folder_response.json()
 
     def get_inbox(self, folder_id: str):
         endpoint = f'/me/mailFolders/{folder_id}/messages'
-        select = 'from,isRead,receivedDateTime,subject,hasAttachments,id'
+        select = 'from,isRead,receivedDateTime,subject,hasAttachments,id,sender'
         top = 25
         order_by = 'receivedDateTime DESC'
         request_url = f'{endpoint}?$select={select}&$top={top}&$orderBy={order_by}'
@@ -70,3 +70,11 @@ class Graph:
 
         attachment_response = self.user_client.get(request_url)
         return attachment_response
+
+    def create_folder(self, folder):
+        endpoint = f'/me/mailFolders'
+        request_url = f'{endpoint}'
+
+        headers = { 'Content-Type': 'application/json' }
+        creation_response = self.user_client.post(request_url, headers=headers, json=folder)
+        return creation_response
